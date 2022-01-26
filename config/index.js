@@ -9,4 +9,4 @@ config = require('./prod')
 //   config = require('./dev')
 // }
 
-// module.exports = config
+module.exports = config

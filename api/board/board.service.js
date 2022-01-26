@@ -5,11 +5,11 @@ const ObjectId = require('mongodb').ObjectId;
 
 async function query(filterBy = null) {
     try {
-        let criteria = {};
-        if (filterBy.labels.length) filterBy.labels = filterBy.labels.split('_');
-        if (filterBy) criteria = _buildCriteria(filterBy);
+        // let criteria = {};
+        // if (filterBy.labels.length) filterBy.labels = filterBy.labels.split('_');
+        // if (filterBy) criteria = _buildCriteria(filterBy);
         const collection = await dbService.getCollection('board');
-        const boards = await collection.find(criteria).toArray() || [];
+        const boards = await collection.find({}).toArray() || [];
         return boards;
     } catch (err) {
         logger.error('cannot find boards', err);

@@ -41,8 +41,10 @@ async function remove(boardId) {
 
 async function add(board) {
     try {
-        const collection = await dbService.getCollection('board');
-        const addedBoard = await collection.insertOne(board);
+        const collection = await dbService.getCollection('board')
+        const { insertedId } = await collection.insertOne(board)
+        const newBoardId = insertedId.toString()
+        const addedBoard = await getById(newBoardId)
         return addedBoard
     } catch (err) {
         logger.error('cannot add board', err);
@@ -63,20 +65,6 @@ async function update(board) {
     }
 }
 
-// function save(newboard) {
-//     if (newBoard._id) {
-//         gBoards = gBoards.map(board => (board._id === newBoard._id) ? newBoard : board)
-//     } else {
-//         newBoard._id = _makeId()
-//         newBoard.name = 'Random Board',
-//             newBoard.price = 123
-//         newBoard.labels = ['Puzzle', 'Brain Teaser']
-//         newBoard.createdAt = Date.now()
-//         newBoard.inStock = true
-//         gBoards.push(newBoard)
-//     }
-//     return _saveBoardsToFile().then(() => newBoard)
-// }
 
 
 function _buildCriteria(filterBy) {

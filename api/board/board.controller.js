@@ -3,6 +3,7 @@ const logger = require('../../services/logger.service')
 
 // GET LIST
 async function getBoards(req, res) {
+	console.log('board.controller.js 💤 6: ');
 	try {
 		let queryParams  = req.query;
 		// if (queryParams) queryParams = JSON.parse(queryParams);
@@ -28,6 +29,7 @@ async function getBoardById(req, res) {
 
 // POST (add board)
 async function addBoard(req, res) {
+	console.log('board.controller.js 💤 31: ');
 	try {
 		const board = req.body;
 		const addedBoard = await boardService.add(board)

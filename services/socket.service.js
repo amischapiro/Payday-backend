@@ -8,25 +8,13 @@ function connectSockets(http, session) {
     gIo = require('socket.io')(http, {
         cors: {
             origin: '*',
-        },
-    });
-    // gIo = require('socket.io')(http, {
-    //     cors: {
-    //         origin: [
-    //             'http://127.0.0.1:8080',
-    //             'http://localhost:8080',
-    //             'http://127.0.0.1:3000',
-    //             'http://localhost:3000',
-    //         ],
-    //         methods: ['GET', 'POST'],
-    //     },
-    // });
+        }
+    })
 
-    const sharedSession = require('express-socket.io-session');
-
-    gIo.use(
-        sharedSession(session, {
-            autoSave: true,
+    gIo.on('connection', socket => {
+        console.log('New socket', socket.id)
+        socket.on('disconnect', socket => {
+            console.log('Someone disconnected')
         })
     );
     gIo.on('connection', (socket) => {
@@ -38,7 +26,26 @@ function connectSockets(http, session) {
             if (socket.handshake) {
                 gSocketBySessionIdMap[socket.handshake.sessionID] = null;
             }
-        });
+            socket.join(topic)
+            socket.myTopic = topic
+        })
+        socket.on('chat newMsg', msg => {
+            console.log('Emitting Chat msg', msg);
+            // emits to all sockets:
+            // gIo.emit('chat addMsg', msg)
+            // emits only to sockets in the same room
+            gIo.to(socket.myTopic).emit('chat addMsg', msg)
+        })
+        // socket.on('user-watch', userId => {
+        //     socket.join('watching:' + userId)
+        // })
+        // socket.on('set-user-socket', userId => {
+        //     logger.debug(`Setting (${socket.id}) socket.userId = ${userId}`)
+        //     socket.userId = userId
+        // })
+        // socket.on('unset-user-socket', () => {
+        //     delete socket.userId
+        // })
 
         socket.on('join new board', (boardId) => {
             console.log('socketService joining board', boardId);

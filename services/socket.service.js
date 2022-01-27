@@ -11,27 +11,10 @@ function connectSockets(http, session) {
     })
     gIo.on('connection', socket => {
         console.log('New socket', socket.id)
-        socket.on('disconnect', socket => {
+        socket.on('disconnect', () => {
             console.log('Someone disconnected')
         })
-        socket.on('enter workspace', boardId => {
-            if (socket.board === boardId) return;
-            if (socket.board) {
-                socket.leave(socket.boardId)
-            }
-            socket.join(boardId)
-            socket.board = boardId
-            console.log('socket.service.js 💤 24: ', 'joined room', socket.board);
-        })
-        // socket.on('enter workspace', boardId => {
-        //     if (socket.board === boardId) return;
-        //     if (socket.board) {
-        //         socket.leave(socket.boardId)
-        //     }
-        //     socket.join(boardId)
-        //     socket.board = boardId
-        //     console.log('socket.service.js 💤 24: ', 'joined room', socket.board);
-        // })
+  
         socket.on('enter board', boardId => {
             if (socket.board === boardId) return;
             if (socket.board) {
@@ -41,23 +24,14 @@ function connectSockets(http, session) {
             socket.board = boardId
             console.log('socket.service.js 💤 24: ', 'joined room', socket.board);
         })
-        socket.on('update board', boardId => {
-            console.log('Emitting new board', boardId);
+        socket.on('update board', () => {
+            console.log('Emitting new board');
             // emits to all sockets:
-            gIo.emit('updated', boardId)
+            gIo.emit('board has updated')
             // emits only to sockets in the same room
             // gIo.to(socket.board).emit('updated', boardId)
         })
-        // socket.on('user-watch', userId => {
-        //     socket.join('watching:' + userId)
-        // })
-        // socket.on('set-user-socket', userId => {
-        //     logger.debug(`Setting (${socket.id}) socket.userId = ${userId}`)
-        //     socket.userId = userId
-        // })
-        // socket.on('unset-user-socket', () => {
-        //     delete socket.userId
-        // })
+   
 
     })
 }

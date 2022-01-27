@@ -22,7 +22,6 @@ function connectSockets(http, session) {
             }
             socket.join(topic)
             socket.myTopic = topic
-            console.log('socket.service.js 💤 19: ', socket);
         })
         socket.on('chat newMsg', msg => {
             console.log('Emitting Chat msg', msg);

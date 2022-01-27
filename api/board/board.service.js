@@ -9,7 +9,6 @@ async function query(filterBy = null) {
         // if (filterBy.labels.length) filterBy.labels = filterBy.labels.split('_');
         // if (filterBy) criteria = _buildCriteria(filterBy);
         const collection = await dbService.getCollection('board');
-        console.log(collection)
         const boards = await collection.find({}).toArray() || [];
         return boards;
     } catch (err) {

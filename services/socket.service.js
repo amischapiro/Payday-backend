@@ -14,6 +14,24 @@ function connectSockets(http, session) {
         socket.on('disconnect', socket => {
             console.log('Someone disconnected')
         })
+        socket.on('enter workspace', boardId => {
+            if (socket.board === boardId) return;
+            if (socket.board) {
+                socket.leave(socket.boardId)
+            }
+            socket.join(boardId)
+            socket.board = boardId
+            console.log('socket.service.js 💤 24: ', 'joined room', socket.board);
+        })
+        // socket.on('enter workspace', boardId => {
+        //     if (socket.board === boardId) return;
+        //     if (socket.board) {
+        //         socket.leave(socket.boardId)
+        //     }
+        //     socket.join(boardId)
+        //     socket.board = boardId
+        //     console.log('socket.service.js 💤 24: ', 'joined room', socket.board);
+        // })
         socket.on('enter board', boardId => {
             if (socket.board === boardId) return;
             if (socket.board) {
@@ -21,13 +39,14 @@ function connectSockets(http, session) {
             }
             socket.join(boardId)
             socket.board = boardId
+            console.log('socket.service.js 💤 24: ', 'joined room', socket.board);
         })
         socket.on('update board', boardId => {
             console.log('Emitting new board', boardId);
             // emits to all sockets:
-            // gIo.emit('chat addMsg', msg)
+            gIo.emit('updated', boardId)
             // emits only to sockets in the same room
-            gIo.to(socket.board).emit('updated board', boardId)
+            // gIo.to(socket.board).emit('updated', boardId)
         })
         // socket.on('user-watch', userId => {
         //     socket.join('watching:' + userId)

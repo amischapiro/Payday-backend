@@ -10,89 +10,40 @@ function connectSockets(http, session) {
         }
     })
     gIo.on('connection', socket => {
-        console.log('New socket', socket.id)
+        // console.log('New socket', socket.id)
         socket.on('disconnect', () => {
-            console.log('Someone disconnected')
+            // console.log('Someone disconnected')
+        })
+
+        socket.on('enter workspace', () => {
+            if (socket.workspace === 'workspace') {
+                return
+            };
+            socket.join('workspace')
+            socket.workspace = 'workspace'
+        })
+
+        socket.on('update workspace', () => {
+            console.log('Emitting workspace');
+            gIo.to('workspace').emit('workspace has updated')
         })
 
         socket.on('enter board', boardId => {
             if (socket.board === boardId) return;
             if (socket.board) {
-                console.log('socket.service.js 💤 21: ', socket.boardId);
-                console.log('socket.service.js 💤 21: ', boardId);
                 socket.leave(socket.board)
             }
             socket.join(boardId)
             socket.board = boardId
-            console.log('socket.service.js 💤 24: ', 'joined room', socket.board);
         })
         socket.on('update board', boardId => {
             console.log('Emitting new board');
-            // emits to all sockets:
             gIo.to(boardId).emit('board has updated', boardId)
-            // emits only to sockets in the same room
-            // gIo.to(socket.board).emit('updated', boardId)
         })
-
-
     })
 }
 
-function emitTo({ type, data, label }) {
-    if (label) gIo.to('watching:' + label).emit(type, data)
-    else gIo.emit(type, data)
-}
-
-async function emitToUser({ type, data, userId }) {
-    logger.debug('Emiting to user socket: ' + userId)
-    const socket = await _getUserSocket(userId)
-    if (socket) socket.emit(type, data)
-    else {
-        console.log('User socket not found');
-        _printSockets();
-    }
-}
-
-// Send to all sockets BUT not the current socket 
-async function broadcast({ type, data, room = null, userId }) {
-    console.log('BROADCASTING', JSON.stringify(arguments));
-    const excludedSocket = await _getUserSocket(userId)
-    if (!excludedSocket) {
-        // logger.debug('Shouldnt happen, socket not found')
-        // _printSockets();
-        return;
-    }
-    logger.debug('broadcast to all but user: ', userId)
-    if (room) {
-        excludedSocket.broadcast.to(room).emit(type, data)
-    } else {
-        excludedSocket.broadcast.emit(type, data)
-    }
-}
-
-async function _getUserSocket(userId) {
-    const sockets = await _getAllSockets();
-    const socket = sockets.find(s => s.userId == userId)
-    return socket;
-}
-async function _getAllSockets() {
-    // return all Socket instances
-    const sockets = await gIo.fetchSockets();
-    return sockets;
-}
-
-async function _printSockets() {
-    const sockets = await _getAllSockets()
-    console.log(`Sockets: (count: ${sockets.length}):`)
-    sockets.forEach(_printSocket)
-}
-function _printSocket(socket) {
-    console.log(`Socket - socketId: ${socket.id} userId: ${socket.userId}`)
-}
 
 module.exports = {
     connectSockets,
-    emitTo,
-    emitToUser,
-    broadcast,
 }

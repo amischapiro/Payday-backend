@@ -43,6 +43,22 @@ function connectSockets(http, session) {
     })
 }
 
+async function broadcast({ type, data, room = null, userId }) {
+    console.log('BROADCASTING', JSON.stringify(arguments));
+    const excludedSocket = await _getUserSocket(userId)
+    if (!excludedSocket) {
+        // logger.debug('Shouldnt happen, socket not found')
+        // _printSockets();
+        return;
+    }
+    logger.debug('broadcast to all but user: ', userId)
+    if (room) {
+        excludedSocket.broadcast.to(room).emit(type, data)
+    } else {
+        excludedSocket.broadcast.emit(type, data)
+    }
+}
+
 
 module.exports = {
     connectSockets,

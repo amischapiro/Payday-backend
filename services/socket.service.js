@@ -24,7 +24,7 @@ function connectSockets(http, session) {
         })
 
         socket.on('update workspace', () => {
-            console.log('Emitting workspace');
+            // console.log('Emitting workspace');
             gIo.to('workspace').emit('workspace has updated')
         })
 
@@ -37,7 +37,6 @@ function connectSockets(http, session) {
             socket.board = boardId
         })
         socket.on('update board', boardId => {
-            console.log('Emitting new board');
             gIo.to(boardId).emit('board has updated', boardId)
         })
     })

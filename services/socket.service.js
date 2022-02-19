@@ -1,4 +1,4 @@
-const { instrument } = require("@socket.io/admin-ui");
+// const { instrument } = require("@socket.io/admin-ui");
 const asyncLocalStorage = require('./als.service');
 const logger = require('./logger.service');
 
@@ -11,6 +11,7 @@ function connectSockets(http, session) {
             origin: '*',
         }
     })
+
     gIo.on('connection', socket => {
         console.log('New socket', socket.id)
         socket.on('disconnect', () => {
@@ -27,7 +28,6 @@ function connectSockets(http, session) {
             socket.to('workspace').emit('workspace has updated')
         })
 
-
         socket.on('enter board', boardId => {
             if (socket.board === boardId) return;
             if (socket.board) {
@@ -37,12 +37,13 @@ function connectSockets(http, session) {
             socket.board = boardId
         })
         socket.on('update board', boardId => {
+            _printSockets()
             socket.to(boardId).emit('board has updated', boardId)
         })
     })
-    instrument(gIo, {
-        auth: false
-    });
+    // instrument(gIo, {
+    //     auth: false
+    // });
 }
 
 

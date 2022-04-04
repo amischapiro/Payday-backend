@@ -2,6 +2,9 @@ const express = require('express')
 const cors = require('cors')
 const path = require('path')
 const expressSession = require('express-session')
+require('dotenv').config()
+require('colors')
+
 
 const app = express()
 const http = require('http').createServer(app)

@@ -3,12 +3,13 @@ const logger = require('../../services/logger.service');
 const ObjectId = require('mongodb').ObjectId;
 
 
-async function query(filterBy = null) {
+async function query(userId) {
     try {
         // let criteria = {};
         // if (filterBy) criteria = _buildCriteria(filterBy);
         const collection = await dbService.getCollection('board');
-        const boards = await collection.find({}).toArray() || [];
+        const boards = await collection.find({ 'createdBy._id': userId }).toArray() || [];
+        console.log('board.service.js 💤 12: boards', boards);
         const boardsHeadres = boards.map(board => {
             const { _id, title } = board
             return { _id, title }

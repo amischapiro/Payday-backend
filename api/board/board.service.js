@@ -9,7 +9,11 @@ async function query(filterBy = null) {
         // if (filterBy) criteria = _buildCriteria(filterBy);
         const collection = await dbService.getCollection('board');
         const boards = await collection.find({}).toArray() || [];
-        return boards;
+        const boardsHeadres = boards.map(board => {
+            const { _id, title } = board
+            return { _id, title }
+        })
+        return boardsHeadres;
     } catch (err) {
         logger.error('cannot find boards', err);
         throw err;

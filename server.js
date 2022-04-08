@@ -1,7 +1,9 @@
 const express = require('express')
-const cors = require('cors')
 const path = require('path')
+const cors = require('cors')
 const expressSession = require('express-session')
+require('dotenv').config()
+require('colors')
 
 const app = express()
 const http = require('http').createServer(app)
@@ -13,10 +15,11 @@ const session = expressSession({
     saveUninitialized: true,
     cookie: { secure: false }
 })
+
 // Express App Config
-app.use(express.json())
-app.use(session)
+app.use(express.json({ limit: '1mb' }));
 app.use(express.static('public'))
+app.use(session)
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'public')))

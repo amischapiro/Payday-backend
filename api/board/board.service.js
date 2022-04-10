@@ -9,7 +9,6 @@ async function query(userId) {
         // if (filterBy) criteria = _buildCriteria(filterBy);
         const collection = await dbService.getCollection('board');
         const boards = await collection.find({ 'createdBy._id': userId }).toArray() || [];
-        console.log('board.service.js 💤 12: boards', boards);
         const boardsHeadres = boards.map(board => {
             const { _id, title } = board
             return { _id, title }

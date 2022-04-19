@@ -41,9 +41,6 @@ function connectSockets(http, session) {
             socket.to(boardId).emit('board has updated', boardId)
         })
     })
-    // instrument(gIo, {
-    //     auth: false
-    // });
 }
 
 

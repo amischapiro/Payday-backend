@@ -57,7 +57,6 @@ async function removeBoardActivities(boardId) {
     try {
         const collection = await dbService.getCollection('activity')
         const { acknowledged } = await collection.deleteMany({ "board._id": boardId })
-        console.log(acknowledged);
         return acknowledged
     } catch (err) {
         logger.error('Cannot remove activies', err)

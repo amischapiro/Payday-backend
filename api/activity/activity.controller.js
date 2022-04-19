@@ -1,6 +1,5 @@
 const logger = require('../../services/logger.service');
 const activityService = require('./activity.service')
-const colors = require('colors')
 
 const getActivities = async (req, res) => {
     try {
@@ -27,13 +26,19 @@ async function addActivity(req, res) {
 }
 
 
-
-async function removeActivity(req, res) {
+async function removeActivitiesByBoard(req, res) {
+    const { boardId } = req.params
+    try {
+        const acknowledged = await activityService.removeBoardActivities(boardId)
+        res.status(200).json(acknowledged)
+    } catch (err) {
+        res.status(500).send({ err: 'Failed to remove activities' })
+    }
 
 }
 
 module.exports = {
     getActivities,
     addActivity,
-    removeActivity
+    removeActivitiesByBoard
 }

@@ -1,7 +1,8 @@
 const dbService = require('../../services/db.service');
 const logger = require('../../services/logger.service');
 const ObjectId = require('mongodb').ObjectId;
-
+const colors = require('colors')
+const fs = require('fs')
 
 async function query(userId) {
     try {
@@ -9,11 +10,11 @@ async function query(userId) {
         // if (filterBy) criteria = _buildCriteria(filterBy);
         const collection = await dbService.getCollection('board');
         const boards = await collection.find({ 'createdBy._id': userId }).toArray() || [];
-        const boardsHeadres = boards.map(board => {
+        const boardsHeaders = boards.map(board => {
             const { _id, title } = board
             return { _id, title }
         })
-        return boardsHeadres;
+        return boardsHeaders;
     } catch (err) {
         logger.error('cannot find boards', err);
         throw err;
@@ -103,10 +104,56 @@ function _buildCriteria(filterBy) {
 //     return filterLabels.every(label => board.labels.includes(label))
 // }
 
+
+
+async function getAll() {
+    try {
+        const collection = await dbService.getCollection('board')
+        const boards = await collection.find({}).toArray() || []
+
+        let allActvs = []
+        boards.forEach(board => {
+            const { title, _id, activities } = board
+
+            const newActvs = activities.map(activity => {
+                const singleActivity = {
+                    ...activity,
+                    board: {
+                        _id,
+                        title
+                    },
+                }
+                delete singleActivity.id
+                return singleActivity
+            })
+            allActvs.push(...newActvs)
+        })
+
+        console.log(colors.brightGreen.underline('allActvs.length'), colors.brightMagenta(allActvs.length))
+
+        const data = JSON.stringify(allActvs, null, 2);
+
+        fs.writeFile('boards.json', data, (err) => {
+            if (err) throw err;
+            console.log('Data written to file');
+        });
+
+        console.log('This is after the write call');
+
+
+        // return boards
+
+    } catch (error) {
+        logger.error('Cannot get boards', error)
+        throw error``
+    }
+}
+
+
 module.exports = {
     query,
     getById,
     remove,
     add,
-    update
+    update,
 }

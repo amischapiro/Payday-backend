@@ -2,8 +2,6 @@ const dbService = require('../../services/db.service');
 const logger = require('../../services/logger.service');
 const ObjectId = require('mongodb').ObjectId
 
-const colors = require('colors')
-
 async function query(skip = 0, limit = 40, boardId, storyId) {
 
     let critirea = {}

@@ -2,6 +2,8 @@ const dbService = require('../../services/db.service');
 const logger = require('../../services/logger.service');
 const ObjectId = require('mongodb').ObjectId
 
+const colors = require('colors')
+
 async function query(skip = 0, limit = 40, boardId, storyId) {
 
     let critirea = {}
@@ -10,8 +12,11 @@ async function query(skip = 0, limit = 40, boardId, storyId) {
 
     try {
         const collection = await dbService.getCollection('activity')
-        const activities = await collection.find(critirea).sort({ createdAt: -1 }).skip(+skip).limit(+limit).toArray()
-        return activities
+        const [activities, queriedCollection] = await Promise.all([
+            collection.find(critirea).sort({ createdAt: -1 }).skip(+skip).limit(+limit).toArray(),
+            collection.find(critirea).toArray()
+        ])
+        return { activities, collectionLength: queriedCollection.length }
     } catch (err) {
         logger.error('Cannot get activities')
         throw err
@@ -25,7 +30,7 @@ async function getByid(activityId) {
         const acticity = await colletction.findOne({ _id: ObjectId(activityId) })
         return acticity
     } catch (err) {
-        logger.error('Cannot get activity by id ')
+        logger.error('Cannot get activity by id')
         throw err
     }
 }

@@ -1,12 +1,14 @@
 const logger = require('../../services/logger.service');
 const activityService = require('./activity.service')
 
+const colors = require('colors')
+
 const getActivities = async (req, res) => {
     try {
         const { limit, skip, storyId } = req.query
         const { boardId } = req.params
-        const activities = await activityService.query(skip, limit, boardId, storyId)
-        res.status(200).json(activities)
+        const { activities, collectionLength } = await activityService.query(skip, limit, boardId, storyId)
+        res.status(200).json({ activities, collectionLength })
     } catch (err) {
         logger.error('Failed to get activities', err)
         res.status(500).send({ err: 'Failed to get activities' })
